@@ -8,12 +8,19 @@ export default class Signup extends React.Component {
             password: "",
             confirmpassword: "",
         }
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     render() {
         return (
             <div>
-                <h1>SIGN UP</h1>
+                <br/>
+                <br/>
+                <h1 class="d-flex justify-content-center ">
+                    Sign Up
+                </h1>
+                <div class="d-flex justify-content-center ">
                 <form onSubmit={this.handleSubmit}>
                     <label>Username:</label>
                     <br/>
@@ -40,18 +47,29 @@ export default class Signup extends React.Component {
                     />
                     <br/>
                     <br/>
-                    <button className="bg-white">Create Account</button>
+                    <button className="bg-warning">Create Account</button>
 
                 </form>
             </div>
+            </div>
+            
         );
     }
     // 
     handleSubmit(e) {
-
+        e.preventDefault();
+        console.log(this.state.username);
     }
     
     handleChange(e) {
-        //this.setState({ username: e.target.value });
+        if (e.target.id === "uname") {
+            this.setState({username: e.target.value});
+        }
+        else if (e.target.id === "pword") {
+            this.setState({password: e.target.value});
+        }
+        else if (e.target.id === "cpword") {
+            this.setState({confirmpassword: e.target.value});
+        }
     }
 }
