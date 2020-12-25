@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-// axios
+import Axios from 'axios';
 
 export default class Login extends React.Component {
     constructor(props) {
@@ -9,6 +9,7 @@ export default class Login extends React.Component {
             password: "",
         }
         this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     render() {
@@ -48,8 +49,20 @@ export default class Login extends React.Component {
     }
 
     handleSubmit(e) {
-        e.preventDefault();
-        console.log("test");
+        if (!this.state.username || !this.state.password) {
+
+        }
+        else {
+            Axios({
+                method: 'POST',
+                data: {
+                    username: this.state.username,
+                    password: this.state.password,
+                },
+                withCredentials: true,
+                url: 'http://localhost:5000/login',
+            }).then((res) => console.log(res));
+        }
     }
 
     handleChange(e) {

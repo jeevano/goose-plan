@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Axios from 'axios';
 
 export default class Signup extends React.Component {
     constructor(props) {
@@ -57,8 +58,30 @@ export default class Signup extends React.Component {
     }
     // 
     handleSubmit(e) {
-        e.preventDefault();
-        console.log(this.state.username);
+        // form validation
+        var invalid = false;
+        if (!this.state.username || !this.state.password || !this.state.confirmpassword) {
+            invalid = true;
+        }
+        if (this.state.password.length < 6) {
+            invalid = true;
+        }
+        if (this.state.password !== this.state.confirmpassword) {
+            invalid = true;
+        }
+
+        if (!invalid) {
+            Axios({
+                method: 'POST',
+                data: {
+                    username: this.state.username,
+                    password: this.state.password,
+                    confirmpassword: this.state.confirmpassword,
+                },
+                withCredentials: true,
+                url: 'http://localhost:5000/signup',
+            }).then((res) => console.log(res));
+        }
     }
     
     handleChange(e) {
