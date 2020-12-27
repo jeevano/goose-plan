@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Axios from 'axios';
 
 export default class Planner extends React.Component {
     render() {
@@ -7,7 +8,6 @@ export default class Planner extends React.Component {
                 <h1>PLANNER</h1>
             </div>
         );
-
     }
 }
 

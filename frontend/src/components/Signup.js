@@ -76,7 +76,6 @@ export default class Signup extends React.Component {
                 data: {
                     username: this.state.username,
                     password: this.state.password,
-                    confirmpassword: this.state.confirmpassword,
                 },
                 withCredentials: true,
                 url: 'http://localhost:5000/signup',
