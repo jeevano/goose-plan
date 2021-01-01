@@ -20,7 +20,9 @@ const app = express();
 const port = process.env.PORT || 5000;
 const secretcode = process.env.SECRET_CODE || 'secret code';
 
-// middleware
+//
+//  MIDDLEWARE
+//
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({extended: true}));
 app.use(express.json());
@@ -37,9 +39,75 @@ app.use(cookieparser(secretcode));
 app.use(passport.initialize());
 app.use(passport.session());
 
-// routes
+//
+//  ROUTES
+//
+
+//
+//  ROUTES FOR LIST
+app.post('/create', (req, res) => {
+    let { title , course , date , time } = req.body;
+    let name = req.user.username;
+
+    pool.query(`INSERT INTO todos (name, title, course, date, time) VALUES ($1, $2, $3, $4, $5)`,
+    [name, title, course, date, time],
+    (err, results) => {
+        if (err) throw err;
+        console.log(results.rows);
+        res.send('success');
+    });
+
+});
+app.get('/read', (req, res) => {
+    let name = req.user.username;
+
+    pool.query(`SELECT * FROM todos WHERE name = $1`, 
+    [name],
+    (err, results) => {
+        if (err) throw err;
+        console.log(results.rows);
+        res.send(results.rows);
+    });
+
+});
+app.get('/read/:id', (req, res) => {
+    let { id } = req.body;
+
+    pool.query(`SELECT * FROM todos WHERE todo_id = $1`, 
+    [id],
+    (err, results) => {
+        if (err) throw err;
+        console.log(results.rows);
+        res.send(results.rows[0]);
+    });
+
+});
+app.put('/read/:id', (req, res) => {
+    let { id , title , course , date , time , isDone } = req.body;
+
+    pool.query(`UPDATE todos SET title = $1, course = $2, date = $3, time = $4, is_done = $5 WHERE todo_id = $6`,
+    [title, course, date, time, isDone, id],
+    (err, results) => {
+        if (err) throw err;
+        console.log(results.rows);
+        res.send('success');
+    });
+
+});
+app.delete('/read/:id', (req, res) => {
+    let { id } = req.body;
+
+    pool.query(`DELETE FROM todos WHERE todo_id = $1`, 
+    [id],
+    (err) => { 
+        if (err) throw err; 
+        res.send('success');
+    });
+
+});
+//
+// ROUTES FOR USER AUTHENTICATION
 app.get('/', (req, res) => {
-    //res.end('hello world!');
     console.log('USER REQUEST:')
     console.log(req.user);
     res.send(req.user);
@@ -62,10 +130,9 @@ app.post('/login', (req, res, next) => {
     })(req, res, next);
 });
 app.post('/signup', async (req, res) => {
-    //req.end('hello world');
     console.log(req.body);
 
-    let { username, password } = req.body;
+    let { username , password } = req.body;
 
     let hashedpassword = await bcrypt.hash(password, 10);
 
@@ -99,7 +166,9 @@ app.post('/signup', async (req, res) => {
 
 });
 
-// start server
+//
+// START SERVER
+//
 app.listen(port, () => {
-    console.log('server started on port: ' + port);
+    console.log('SERVER STARTED ON PORT: ' + port);
 });

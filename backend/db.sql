@@ -6,3 +6,13 @@ CREATE TABLE users(
     password VARCHAR(200) NOT NULL,
     UNIQUE(name)
 );
+
+CREATE TABLE todos(
+    todo_id BIGSERIAL PRIMARY KEY NOT NULL,
+    name VARCHAR(200) NOT NULL,
+    title VARCHAR(200) NOT NULL,
+    course VARCHAR(20),
+    date VARCHAR(20),
+    time VARCHAR(20),
+    is_done BIT
+);
