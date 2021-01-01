@@ -3,7 +3,6 @@ const express = require('express');
 const cors = require('cors');
 
 const passport = require('passport');
-//const passportlocal = require('passport-local').Strategy;
 const initializePassport = require('./config/passport-config');
 initializePassport(passport);
 
@@ -19,7 +18,7 @@ require('dotenv').config();
 // variables
 const app = express();
 const port = process.env.PORT || 5000;
-const secretcode = process.env.SECRET_CODE;
+const secretcode = process.env.SECRET_CODE || 'secret code';
 
 // middleware
 app.use(bodyparser.json());
@@ -41,13 +40,18 @@ app.use(passport.session());
 // routes
 app.get('/', (req, res) => {
     //res.end('hello world!');
+    console.log('USER REQUEST:')
+    console.log(req.user);
     res.send(req.user);
 });
 app.post('/login', (req, res, next) => {
     passport.authenticate('local', (err, user, info) => {
         console.log(req.user);
         if (err) throw err;
-        if (!user) console.log('user does not exist');
+        if (!user) {
+            console.log('user does not exist');
+            res.send('err');
+        }
         if (user) {
             req.logIn(user, (err) => {
                 if (err) throw err;
@@ -87,7 +91,6 @@ app.post('/signup', async (req, res) => {
                     throw err;
                 }
                 console.log(results.rows);
-                //res.redirect('/login'); // causing problems
             });
 
             res.send('account registered');

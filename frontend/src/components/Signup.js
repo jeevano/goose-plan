@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Axios from 'axios';
+import { Link } from 'react-router-dom';
 
 export default class Signup extends React.Component {
     constructor(props) {
@@ -8,6 +9,7 @@ export default class Signup extends React.Component {
             username: "",
             password: "",
             confirmpassword: "",
+            message: "",
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -19,7 +21,7 @@ export default class Signup extends React.Component {
                 <br/>
                 <br/>
                 <h1 class="d-flex justify-content-center ">
-                    Sign Up
+                    Register
                 </h1>
                 <div class="d-flex justify-content-center ">
                 <form onSubmit={this.handleSubmit}>
@@ -27,6 +29,7 @@ export default class Signup extends React.Component {
                     <br/>
                     <input
                         id="uname"
+                        className="form-control"
                         onChange={this.handleChange}
                         value={this.state.text}
                     />
@@ -34,6 +37,8 @@ export default class Signup extends React.Component {
                     <label>Password:</label>
                     <br/>
                     <input
+                        type="password"
+                        className="form-control"
                         id="pword"
                         onChange={this.handleChange}
                         value={this.state.text}
@@ -42,14 +47,21 @@ export default class Signup extends React.Component {
                     <label>Confirm Password:</label>
                     <br/>
                     <input
+                        type="password"
+                        className="form-control"
                         id="cpword"
                         onChange={this.handleChange}
                         value={this.state.text}
                     />
                     <br/>
                     <br/>
-                    <button className="bg-warning">Create Account</button>
-
+                    <button className="btn btn-warning">
+                        Create Account
+                    </button>
+                    <br/>
+                    <label>{this.state.message}</label>
+                    <br/>
+                <Link to="/login">Have an account? Login</Link>
                 </form>
             </div>
             </div>
@@ -59,15 +71,22 @@ export default class Signup extends React.Component {
     // 
     handleSubmit(e) {
         // form validation
+        e.preventDefault();
         var invalid = false;
-        if (!this.state.username || !this.state.password || !this.state.confirmpassword) {
-            invalid = true;
-        }
         if (this.state.password.length < 6) {
             invalid = true;
+            this.setState({message: "Password too short (<6)"});
+            //e.preventDefault();
         }
         if (this.state.password !== this.state.confirmpassword) {
             invalid = true;
+            this.setState({message: "Passwords do not match"});
+            //e.preventDefault();
+        }
+        if (!this.state.username || !this.state.password || !this.state.confirmpassword) {
+            invalid = true;
+            this.setState({message: "Please enter all fields"});
+            //e.preventDefault();
         }
 
         if (!invalid) {
@@ -79,7 +98,17 @@ export default class Signup extends React.Component {
                 },
                 withCredentials: true,
                 url: 'http://localhost:5000/signup',
-            }).then((res) => console.log(res));
+            }).then((res) => {
+                console.log(res);
+                if (res === 'account registered') {
+                    this.setState({message: "Registration succesful"});
+                    window.location = "/login";
+                }
+                else {
+                    this.setState({message: "Username already in use"});
+                    //e.preventDefault();
+                }
+            });
         }
     }
     

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Axios from 'axios';
+import { Link } from 'react-router-dom';
 
 export default class Login extends React.Component {
     constructor(props) {
@@ -7,6 +8,8 @@ export default class Login extends React.Component {
         this.state = {
             username: "",
             password: "",
+            message: "",
+            loggedIn: false,
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -27,6 +30,7 @@ export default class Login extends React.Component {
                     <br/>
                     <input
                         id="uname"
+                        className="form-control"
                         onChange={this.handleChange}
                         value={this.state.text}
                     />
@@ -34,13 +38,21 @@ export default class Login extends React.Component {
                     <label>Password:</label>
                     <br/>
                     <input
+                        type="password"
+                        className="form-control"
                         id="pword"
                         onChange={this.handleChange}
                         value={this.state.text}
                     />
                     <br/>
                     <br/>
-                    <button className="bg-warning ">Login</button>
+                    <button className="btn btn-warning ">
+                        Login
+                    </button>
+                    <br/>
+                    <label>{this.state.message}</label>
+                    <br/>
+                <Link to="/signup">No account? Register</Link>
                 </form>
                 </div>
             </div>
@@ -49,8 +61,9 @@ export default class Login extends React.Component {
     }
 
     handleSubmit(e) {
+        e.preventDefault();
         if (!this.state.username || !this.state.password) {
-
+            this.setState({message: "Please enter all fields"});
         }
         else {
             Axios({
@@ -61,7 +74,18 @@ export default class Login extends React.Component {
                 },
                 withCredentials: true,
                 url: 'http://localhost:5000/login',
-            }).then((res) => console.log(res));
+            }).then((res) => {
+                console.log(res);
+
+                if (res.data === 'err') {
+                    this.setState({message: "Invalid credentials"});
+                }
+                else {
+                    window.location = "/plan";
+                }
+            });
+
+            //e.preventDefault();
         }
     }
 
