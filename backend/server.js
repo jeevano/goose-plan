@@ -1,4 +1,6 @@
-// imports / dependencies
+//
+//  IMPORTS
+//
 const express = require('express');
 const cors = require('cors');
 
@@ -15,7 +17,7 @@ const { pool } = require('./config/db-config');
 
 require('dotenv').config();
 
-// variables
+//
 const app = express();
 const port = process.env.PORT || 5000;
 const secretcode = process.env.SECRET_CODE || 'secret code';
@@ -45,9 +47,9 @@ app.use(passport.session());
 
 //
 //  ROUTES FOR LIST
-app.post('/create', (req, res) => {
+app.post('/create', async (req, res) => {
     let { title , course , date , time } = req.body;
-    let name = req.user.username;
+    let name = req.user.name;
 
     pool.query(`INSERT INTO todos (name, title, course, date, time) VALUES ($1, $2, $3, $4, $5)`,
     [name, title, course, date, time],
@@ -58,8 +60,8 @@ app.post('/create', (req, res) => {
     });
 
 });
-app.get('/read', (req, res) => {
-    let name = req.user.username;
+app.get('/read', async (req, res) => {
+    let name = req.user.name;
 
     pool.query(`SELECT * FROM todos WHERE name = $1`, 
     [name],
@@ -70,8 +72,9 @@ app.get('/read', (req, res) => {
     });
 
 });
-app.get('/read/:id', (req, res) => {
-    let { id } = req.body;
+app.get('/read/:id', async (req, res) => {
+    // = req.params?
+    let { id } = req.params;
 
     pool.query(`SELECT * FROM todos WHERE todo_id = $1`, 
     [id],
@@ -82,8 +85,9 @@ app.get('/read/:id', (req, res) => {
     });
 
 });
-app.put('/read/:id', (req, res) => {
-    let { id , title , course , date , time , isDone } = req.body;
+app.put('/read/:id', async (req, res) => {
+    let { id } = req.params;
+    let { title , course , date , time , isDone } = req.body;
 
     pool.query(`UPDATE todos SET title = $1, course = $2, date = $3, time = $4, is_done = $5 WHERE todo_id = $6`,
     [title, course, date, time, isDone, id],
@@ -94,8 +98,8 @@ app.put('/read/:id', (req, res) => {
     });
 
 });
-app.delete('/read/:id', (req, res) => {
-    let { id } = req.body;
+app.delete('/read/:id', async (req, res) => {
+    let { id } = req.params;
 
     pool.query(`DELETE FROM todos WHERE todo_id = $1`, 
     [id],
@@ -106,7 +110,7 @@ app.delete('/read/:id', (req, res) => {
 
 });
 //
-// ROUTES FOR USER AUTHENTICATION
+//  ROUTES FOR USER AUTHENTICATION
 app.get('/', (req, res) => {
     console.log('USER REQUEST:')
     console.log(req.user);
@@ -167,7 +171,7 @@ app.post('/signup', async (req, res) => {
 });
 
 //
-// START SERVER
+//  START SERVER
 //
 app.listen(port, () => {
     console.log('SERVER STARTED ON PORT: ' + port);

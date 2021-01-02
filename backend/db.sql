@@ -14,5 +14,5 @@ CREATE TABLE todos(
     course VARCHAR(20),
     date VARCHAR(20),
     time VARCHAR(20),
-    is_done BIT
+    is_done INTEGER DEFAULT 0
 );
