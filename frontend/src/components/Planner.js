@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, { Component, useDebugValue, useEffect, useState } from 'react';
 import Axios from 'axios';
 
 export default class Planner extends React.Component {
@@ -19,20 +19,28 @@ const Input = () => {
     const [course, setCourse] = useState("");
     const [date, setDate] = useState("");
     const [time, setTime] = useState("");
-    // const [done, setDone] = useState(0); ?
+    // const [done, setDone] = useState(0); ? dont need here, done default is 0
 
-    const handleSubmit = ((e) => {
+    const handleSubmit = (async (e) => {
         e.preventDefault();
         // form validation
 
         // send
         Axios({
-            method: 'GET',
+            method: 'POST',
+            data: {
+                title: title,
+                course: course,
+                date: date,
+                time: time
+            },
             withCredentials: true,
-            url: 'http://localhost:5000/'
+            url: 'http://localhost:5000/create'
         }).then((res) => {
             console.log(res);
         });
+
+        window.location = "/plan";
 
     });
 
@@ -76,15 +84,46 @@ const Input = () => {
 const List = () => {
     const [list, setList] = useState([]); // * empty array of json?
 
-    const getList = (() => {
+    const getList = (async () => {
         Axios({
             method: 'GET',
             withCredentials: true,
-            url: 'http://localhost:5000/list',
+            url: 'http://localhost:5000/read',
         }).then((res) => {
             console.log(res);
+            setList(res.data);
         });
     });
+
+    const toggleComplete = (async (item) => {
+        let done = 0;
+
+        if (item.is_done) {
+            done = 0;
+        }
+        else {
+            done = 1;
+        }
+
+        Axios({
+            method: 'PUT',
+            withCredentials: true,
+            data: {
+                title: item.title,
+                course: item.course,
+                date: item.date,
+                time: item.time,
+                isDone: done
+            },
+            url: `http://localhost:5000/read/${item.todo_id}`
+        });
+
+        window.location = "/plan";
+    });
+
+    useEffect(() => {
+        getList();
+    }, []);
 
     return (
         <div>
@@ -99,8 +138,26 @@ const List = () => {
                         <th>Edit</th>
                     </tr>
                 </thead>
-                <tbody>
-                    {""}
+                <tbody>                    
+                   {list.map((item) => (
+                        <tr key={item.todo_id}>
+                            <td>
+                                <button
+                                    className={item.is_done ? "btn btn-success" : "btn btn-danger"}
+                                    onClick={() => {toggleComplete(item)}}
+                                >
+                                    {item.is_done ? "X" : "O"}
+                                </button>
+                            </td>
+                            <td>{item.title}</td>
+                            <td>{item.course}</td>
+                            <td>{item.date}</td>
+                            <td>{item.time}</td>
+                            <td>
+                                <Edit todo = { item } />
+                            </td>
+                        </tr>
+                    ))}                    
                 </tbody>
             </table>
         </div>
@@ -113,9 +170,32 @@ const Edit = ({ todo }) => {
     const [date, setDate] = useState(todo.date);
     const [time, setTime] = useState(todo.time);
 
+    const updateTodo = (async (e) => {
+
+    });
+
     return (
         <div>
+            <button
+                type="button"
+                class="btn btn-warning"
+                data-toggle="modal"
+                data-target={`#id${todo.todo_id}`}
+            >
+                Edit
+            </button>
 
+            <div
+                class="modal"
+                onClick={() => {
+                    setTitle(todo.title);
+                    setCourse(todo.course);
+                    setDate(todo.date);
+                    setTime(todo.time);
+                }}
+            >
+
+            </div>
         </div>
     );
 }
