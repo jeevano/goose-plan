@@ -1,7 +1,7 @@
 import React, { Component, useDebugValue, useEffect, useState } from 'react';
 import Axios from 'axios';
 import { AiFillEdit } from 'react-icons/ai';
-import { BiCheckBox , BiCheckboxSquare , BiCheckboxChecked } from 'react-icons/bi';
+import { BiCheckbox , BiCheckboxSquare , BiCheckboxChecked } from 'react-icons/bi';
 
 export default class Planner extends React.Component {
 
@@ -10,7 +10,6 @@ export default class Planner extends React.Component {
             <div>
                 <Input />
                 <List />
-                {/*<Edit todo = {{todo_id: '1', title: 't', course: 'c', date: 'd', time: 't'}} />*/}
             </div>
         );
     }
@@ -156,10 +155,10 @@ const List = () => {
                         <tr key={item.todo_id}>
                             <td>
                                 <button
-                                    className={item.is_done ? "btn btn-dark" : "btn btn-white"}
+                                    className="btn btn-white"
                                     onClick={() => {toggleComplete(item)}}
                                 >
-                                    {item.is_done ? "X" : "O"}
+                                    {item.is_done ? (<BiCheckboxSquare />) : (<BiCheckbox />)}
                                 </button>
                             </td>
                             <td>{item.title}</td>
