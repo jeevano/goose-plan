@@ -1,5 +1,7 @@
 import React, { Component, useDebugValue, useEffect, useState } from 'react';
 import Axios from 'axios';
+import { AiFillEdit } from 'react-icons/ai';
+import { BiCheckBox , BiCheckboxSquare , BiCheckboxChecked } from 'react-icons/bi';
 
 export default class Planner extends React.Component {
 
@@ -8,18 +10,18 @@ export default class Planner extends React.Component {
             <div>
                 <Input />
                 <List />
+                {/*<Edit todo = {{todo_id: '1', title: 't', course: 'c', date: 'd', time: 't'}} />*/}
             </div>
         );
     }
 }
-
+// LOGOUT BUTTON on navbar by (window.location === '/plan') ? x : y
 // using functions with hooks instead of react components
 const Input = () => {
     const [title, setTitle] = useState("");
     const [course, setCourse] = useState("");
     const [date, setDate] = useState("");
     const [time, setTime] = useState("");
-    // const [done, setDone] = useState(0); ? dont need here, done default is 0
 
     const handleSubmit = (async (e) => {
         e.preventDefault();
@@ -122,7 +124,18 @@ const List = () => {
     });
 
     useEffect(() => {
-        getList();
+        Axios({
+            method: 'GET',
+            withCredentials: true,
+            url: 'http://localhost:5000/'
+        }).then((res) => {
+            if (res.data) {
+                getList();
+            }
+            else {
+                window.location = '/login';
+            }
+        });
     }, []);
 
     return (
@@ -143,7 +156,7 @@ const List = () => {
                         <tr key={item.todo_id}>
                             <td>
                                 <button
-                                    className={item.is_done ? "btn btn-success" : "btn btn-danger"}
+                                    className={item.is_done ? "btn btn-dark" : "btn btn-white"}
                                     onClick={() => {toggleComplete(item)}}
                                 >
                                     {item.is_done ? "X" : "O"}
@@ -171,22 +184,43 @@ const Edit = ({ todo }) => {
     const [time, setTime] = useState(todo.time);
 
     const updateTodo = (async (e) => {
+        Axios({
+            method: 'PUT',
+            data: {
+                title: title,
+                course: course,
+                date: date,
+                time: time
+            },
+            withCredentials: true,
+            url: `http://localhost:5000/read/${todo.todo_id}`
+        });
+        window.location = '/plan';
+    });
 
+    const deleteTodo = (async (e) => {
+        Axios({
+           method: 'DELETE',
+           withCredentials: true,
+           url: `http://localhost:5000/read/${todo.todo_id}` 
+        });
+        window.location = '/plan';
     });
 
     return (
         <div>
             <button
                 type="button"
-                class="btn btn-warning"
+                className="btn btn-warning"
                 data-toggle="modal"
                 data-target={`#id${todo.todo_id}`}
             >
-                Edit
+                <AiFillEdit />
             </button>
 
             <div
-                class="modal"
+                className="modal"
+                id={`id${todo.todo_id}`}
                 onClick={() => {
                     setTitle(todo.title);
                     setCourse(todo.course);
@@ -194,7 +228,69 @@ const Edit = ({ todo }) => {
                     setTime(todo.time);
                 }}
             >
-
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5>Edit</h5>
+                            <button
+                                type="button"
+                                className="close"
+                                data-dismiss="modal"
+                                aria-label="Close"
+                            >
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div className="modal-body d-flex justify-content-center">
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="title"
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                            />
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="course"
+                                value={course}
+                                onChange={(e) => setCourse(e.target.value)}
+                            />
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="date"
+                                value={date}
+                                onChange={(e) => setDate(e.target.value)}
+                            />
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="time"
+                                value={time}
+                                onChange={(e) => setTime(e.target.value)}
+                            />
+                        </div>
+                        <div class="modal-footer">
+                            <button 
+                                onClick={deleteTodo} 
+                                type="button"
+                                className="btn btn-danger"
+                                data-dismiss="modal"
+                            >
+                                Delete
+                            </button>
+                            <button 
+                                onClick={updateTodo} 
+                                type="button"
+                                className="btn btn-success"
+                                data-dismiss="modal"
+                            >
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );
