@@ -6,7 +6,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Navbar from "./components/Navbar";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
-import Planner from "./components/Planner";
+import CourseBar from "./components/CourseBar";
 
 function App() {
     return (
@@ -15,7 +15,7 @@ function App() {
             <Route path="/" exact component={Login} />
             <Route path="/login" exact component={Login} />
             <Route path="/signup" exact component={Signup} />
-            <Route path="/plan" exact component={Planner} />
+            <Route path="/plan" exact component={CourseBar} />
           <br/>
       </Router>
     );
