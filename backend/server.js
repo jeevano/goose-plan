@@ -46,41 +46,40 @@ app.use(passport.session());
 //
 
 //
-//  ROUTES FOR LIST
+//  ROUTES FOR LIST (todos)
 app.post('/create', async (req, res) => {
     let { title , course , date , time } = req.body;
-    let name = req.user.name;
+    let name = req.user.name || '';
 
     pool.query(`INSERT INTO todos (name, title, course, date, time) VALUES ($1, $2, $3, $4, $5)`,
     [name, title, course, date, time],
     (err, results) => {
         if (err) throw err;
-        console.log(results.rows);
+        //console.log(results.rows);
         res.send('success');
     });
 
 });
 app.get('/read', async (req, res) => {
-    let name = req.user.name;
+    let name = req.user.name || '';
 
     pool.query(`SELECT * FROM todos WHERE name = $1`, 
     [name],
     (err, results) => {
         if (err) throw err;
-        console.log(results.rows);
+        //console.log(results.rows);
         res.send(results.rows);
     });
 
 });
 app.get('/read/:id', async (req, res) => {
-    // = req.params?
     let { id } = req.params;
 
     pool.query(`SELECT * FROM todos WHERE todo_id = $1`, 
     [id],
     (err, results) => {
         if (err) throw err;
-        console.log(results.rows);
+        //console.log(results.rows);
         res.send(results.rows[0]);
     });
 
@@ -93,7 +92,7 @@ app.put('/read/:id', async (req, res) => {
     [title, course, date, time, isDone, id],
     (err, results) => {
         if (err) throw err;
-        console.log(results.rows);
+        //console.log(results.rows);
         res.send('success');
     });
 
@@ -109,8 +108,51 @@ app.delete('/read/:id', async (req, res) => {
     });
 
 });
+app.get('/readcourse/:course', async (req, res) => {
+    let name = req.user.name || '';
+    let { course } = req.params;
+
+    pool.query(`SELECT * FROM todos WHERE name = $1 AND course = $2`,
+    [name, course],
+    (err, results) => {
+        if (err) throw err;
+        res.send(results.rows);
+    });
+});
 //
-//  ROUTES FOR USER AUTHENTICATION
+//  ROUTES FOR COURSES (courses)
+app.get('/course', async (req, res) => {
+    let name = req.user.name || '';
+
+    pool.query(`SELECT * FROM courses WHERE name = $1`, 
+    [name],
+    (err, results) => {
+        if (err) throw err;
+        res.send(results.rows);
+    });
+});
+app.post('/course/:course', async (req, res) => {
+    let name = req.user.name || '';
+    let { course } = req.params;
+
+    pool.query(`INSERT INTO courses (name, course) VALUES ($1, $2)`, 
+    [name, course],
+    (err) => {
+        if (err) throw err;
+    });
+});
+app.delete('/course/:course', async (req, res) => {
+    let name = req.user.name || '';
+    let { course } = req.params;
+
+    pool.query(`DELETE FROM courses WHERE name = $1 AND course = $2`,
+    [name, course],
+    (err) => {
+        if (err) throw err;
+    });
+});
+//
+//  ROUTES FOR USER AUTHENTICATION (users)
 app.get('/', (req, res) => {
     console.log('USER REQUEST:')
     console.log(req.user);
@@ -140,7 +182,6 @@ app.post('/signup', async (req, res) => {
 
     let hashedpassword = await bcrypt.hash(password, 10);
 
-    // make sure name not same as existing
     pool.query(`SELECT * FROM users WHERE name = $1`, 
     [username], 
     (err, results) => {

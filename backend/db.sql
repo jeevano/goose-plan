@@ -16,3 +16,9 @@ CREATE TABLE todos(
     time VARCHAR(20),
     is_done INTEGER DEFAULT 0
 );
+
+CREATE TABLE courses(
+    course_id BIGSERIAL PRIMARY KEY NOT NULL,
+    name VARCHAR(200) NOT NULL,
+    course VARCHAR(200) NOT NULL
+);
