@@ -53,14 +53,14 @@ const Input = (scourse) => {
                     onChange={(e) => setCourse(e.target.value)}
                 />
                 <input
-                    type="text"
+                    type="date"
                     className="form-control"
                     id="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
                 />
                 <input
-                    type="text"
+                    type="time"
                     className="form-control"
                     id="time"
                     value={time}

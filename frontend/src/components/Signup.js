@@ -100,7 +100,7 @@ export default class Signup extends React.Component {
                 url: 'http://localhost:5000/signup',
             }).then((res) => {
                 console.log(res);
-                if (res === 'account registered') {
+                if (res.data === 'account registered') {
                     this.setState({message: "Registration succesful"});
                     window.location = "/login";
                 }
